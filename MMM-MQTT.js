@@ -26,6 +26,7 @@ Module.register("MMM-MQTT", {
             var s = this.config.mqttServers[i];
             var serverKey = this.makeServerKey(s);
             console.log(this.name + ': Adding config for ' + s.address + ' port ' + s.port + ' user ' + s.user);
+			
             for (j = 0; j < s.subscriptions.length; j++) {
                 var sub = s.subscriptions[j];
                 this.subscriptions.push({
@@ -36,6 +37,9 @@ Module.register("MMM-MQTT", {
                     jsonpointer: sub.jsonpointer,
                     suffix: typeof (sub.suffix) == 'undefined' ? '' : sub.suffix,
                     value: '',
+					valueIcons: sub.valueIcons,
+					hideValue: sub.hideValue,
+					icon: '',
                     time: Date.now(),
                     maxAgeSeconds: sub.maxAgeSeconds
                 });
@@ -72,6 +76,16 @@ Module.register("MMM-MQTT", {
                         }
                         sub.value = value;
                         sub.time = payload.time;
+						if(undefined != sub.valueIcons) {
+                        	iconConfig = sub.valueIcons;
+                        	for(j = 0; j < iconConfig.length; j++){
+                        		if(iconConfig[j].value === value){
+                        			sub.icon = iconConfig[j].icon;
+                        			console.log(this.name + ': MQTT_PAYLOAD - searching icon value: '+iconConfig[j].icon);
+                        			break;
+                        		}
+                        	}
+                        }															  
                     }
                 }
                 this.updateDom();
@@ -116,17 +130,31 @@ Module.register("MMM-MQTT", {
             var subWrapper = document.createElement("tr");
 
             // Label
-            var labelWrapper = document.createElement("td");
-            labelWrapper.innerHTML = sub.label;
-            labelWrapper.className = "align-left";
-            subWrapper.appendChild(labelWrapper);
-
+			var classNameForValue = "align-left";
+            if(undefined != sub.label){						
+				var labelWrapper = document.createElement("td");
+				labelWrapper.innerHTML = sub.label;
+				labelWrapper.className = "align-left";
+				subWrapper.appendChild(labelWrapper);
+				classNameForValue = "align-right ";
+			}
+															 
+			if(null != sub.icon){
+            	var iconWrapper = document.createElement("td");
+//            	iconWrapper.innerHTML = "<img src='"+sub.icon+"'/>";
+            	iconWrapper.innerHTML = sub.icon;
+            	iconWrapper.className = classNameForValue+"align-right icon";
+	            subWrapper.appendChild(iconWrapper);
+            }		 
+												 
             // Value
             tooOld = self.isValueTooOld(sub.maxAgeSeconds, sub.time);
-            var valueWrapper = document.createElement("td");
-            valueWrapper.innerHTML = sub.value;
-            valueWrapper.className = "align-right medium " + (tooOld ? "dimmed" : "bright");
-            subWrapper.appendChild(valueWrapper);
+			if(!sub.hideValue){
+				var valueWrapper = document.createElement("td");
+				valueWrapper.innerHTML = sub.value;
+				valueWrapper.className = classNameForValue+" medium " + (tooOld ? "dimmed" : "bright");
+				subWrapper.appendChild(valueWrapper);
+	 		}
 
             // Suffix
             var suffixWrapper = document.createElement("td");
