@@ -8,7 +8,7 @@ Please report issues. his is not tested very much.
 
 ## Screenshot
 
-![Screenshot](doc/MQTT.png)
+![Screenshot](doc/MQTT_icons.png)
 
 Module for [MagicMirror](https://github.com/MichMich/MagicMirror/) showing the payload of a message from MQTT.
 
