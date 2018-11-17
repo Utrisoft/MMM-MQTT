@@ -4,7 +4,10 @@
 
 In order to support multiple instances and multiple servers, the configuration is totally changed! Sorry to not be backwards compatible, but I hope this solves some of the issues I have received.
 
+Added support to icons and may hide labels.
+
 Please report issues. his is not tested very much.
+
 
 ## Screenshot
 
